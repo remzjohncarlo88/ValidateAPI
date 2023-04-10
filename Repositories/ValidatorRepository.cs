@@ -14,7 +14,7 @@ namespace Repositories
         private string[] Citizenship = { "Citizen", "PermanentResident" };
         private string[] BannedIndustries = { "Banned Industry 1", "Banned Industry 2" };
         private string[] AllowedIndustries = { "Industry 1", "Industry 2" };
-        public IEnumerable<ValidationResult> ValidateApplicant(Applicant applicant)
+        public IEnumerable<ValidationResult> ValidateApplicant(Applicant applicant, Dictionary<string, string> conditionalDict)
         {
             List<ValidationResult> result = new List<ValidationResult>();
 
@@ -90,7 +90,27 @@ namespace Repositories
                     Decision = Decision.Unknown.ToString()
                 });
             }
-            
+            else if (Convert.ToInt32(conditionalDict["LoanLow"]) <= applicant.LoanAmount 
+                && applicant.LoanAmount <= Convert.ToInt32(conditionalDict["LoanHigh"]))
+            {
+                result.Add(new ValidationResult
+                {
+                    Rule = nameof(applicant.LoanAmount),
+                    Message = string.Concat("Loan Amount must be between $", conditionalDict["LoanLow"], " and $", conditionalDict["LoanHigh"]),
+                    Decision = Decision.Unqualified.ToString()
+                });
+            }
+            else if (Convert.ToInt32(conditionalDict["TradingLow"]) <= applicant.TimeTrading
+                && applicant.TimeTrading <= Convert.ToInt32(conditionalDict["TradingHigh"]))
+            {
+                result.Add(new ValidationResult
+                {
+                    Rule = nameof(applicant.LoanAmount),
+                    Message = string.Concat("Time Trading must be between ", conditionalDict["TradingLow"], " and ", conditionalDict["TradingHigh"]),
+                    Decision = Decision.Unqualified.ToString()
+                });
+            }
+
             return result;
         }
 

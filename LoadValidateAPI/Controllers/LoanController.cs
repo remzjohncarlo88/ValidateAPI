@@ -10,10 +10,12 @@ namespace LoadValidateAPI.Controllers
     public class LoanController : ControllerBase
     {
         private IRepositoryWrapper _repository;
+        private readonly IConfiguration _configuration;
 
-        public LoanController(IRepositoryWrapper repository)
+        public LoanController(IRepositoryWrapper repository, IConfiguration configuration)
         {
             _repository = repository;
+            _configuration = configuration;
         }
 
         [HttpPost("~/CreateApplicant")]
@@ -21,6 +23,12 @@ namespace LoadValidateAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public string Create(Applicant applicant)
         {
+            Dictionary<string, string> conditionalDict = new Dictionary<string, string>();
+            conditionalDict.Add("TradingLow", _configuration["TimeTrading:Low"]);
+            conditionalDict.Add("TradingHigh", _configuration["TimeTrading:High"]);
+            conditionalDict.Add("LoanLow", _configuration["LoanAmount:Low"]);
+            conditionalDict.Add("LoanLow", _configuration["LoanAmount:High"]);
+
             var app = _repository.ApplicantRepository.CreateApplicant(applicant);
 
             return app;

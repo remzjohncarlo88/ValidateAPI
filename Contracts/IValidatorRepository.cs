@@ -9,6 +9,6 @@ namespace Contracts
 {
     public interface IValidatorRepository
     {
-        IEnumerable<ValidationResult> ValidateApplicant(Applicant value);
+        IEnumerable<ValidationResult> ValidateApplicant(Applicant value, Dictionary<string, string> conditionalDict);
     }
 }
