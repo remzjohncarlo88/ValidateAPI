@@ -21,15 +21,17 @@ namespace LoadValidateAPI.Controllers
         [HttpPost("~/CreateApplicant")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public string Create(Applicant applicant)
+        public Result Create(Applicant applicant)
         {
             Dictionary<string, string> conditionalDict = new Dictionary<string, string>();
             conditionalDict.Add("TradingLow", _configuration["TimeTrading:Low"]);
             conditionalDict.Add("TradingHigh", _configuration["TimeTrading:High"]);
             conditionalDict.Add("LoanLow", _configuration["LoanAmount:Low"]);
-            conditionalDict.Add("LoanLow", _configuration["LoanAmount:High"]);
+            conditionalDict.Add("LoanHigh", _configuration["LoanAmount:High"]);
 
-            var app = _repository.ApplicantRepository.CreateApplicant(applicant);
+            var rt = applicant;
+
+            Result app = _repository.ApplicantRepository.CreateApplicant(applicant, conditionalDict);
 
             return app;
         }

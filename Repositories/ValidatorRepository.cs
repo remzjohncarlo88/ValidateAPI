@@ -45,6 +45,15 @@ namespace Repositories
                     Decision = Decision.Unqualified.ToString()
                 });
             }
+            else if (string.IsNullOrEmpty(applicant.PhoneNumber))
+            {
+                result.Add(new ValidationResult
+                {
+                    Rule = nameof(applicant.PhoneNumber),
+                    Message = "Phone Number is required.",
+                    Decision = Decision.Unqualified.ToString()
+                });
+            }
             else if (!applicant.CountryCode.Equals("AU"))
             {
                 result.Add(new ValidationResult
@@ -61,15 +70,6 @@ namespace Repositories
                     Rule = nameof(applicant.CitizenshipStatus),
                     Message = "Citizenship is invalid.",
                     Decision = Decision.Unqualified.ToString()
-                });
-            }
-            else if (AllowedIndustries.Contains(applicant.Industry))
-            {
-                result.Add(new ValidationResult
-                {
-                    Rule = nameof(applicant.Industry),
-                    Message = "Industry is allowed.",
-                    Decision = Decision.Qualified.ToString()
                 });
             }
             else if (BannedIndustries.Contains(applicant.Industry))
@@ -111,6 +111,19 @@ namespace Repositories
                 });
             }
 
+            // check if business number is valid
+            var task = Task.Run(async () => await CheckBusinessNumber(applicant.BusinessNumber));
+            task.Wait();
+            if (!task.Result)
+            {
+                result.Add(new ValidationResult
+                {
+                    Rule = nameof(applicant.BusinessNumber),
+                    Message = "The business number is invalid.",
+                    Decision = Decision.Unqualified.ToString()
+                });
+            }
+
             return result;
         }
 
@@ -122,6 +135,13 @@ namespace Repositories
                 Message = errorMessage,
                 Decision = decision
             });
+        }
+
+        private async Task<bool> CheckBusinessNumber(int businessNumber)
+        {
+            await Task.Delay(4000);
+
+            return businessNumber.ToString().Length == 11 ? true : false;
         }
     }
 }

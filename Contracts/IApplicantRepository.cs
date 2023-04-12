@@ -9,6 +9,6 @@ namespace Contracts
 {
     public interface IApplicantRepository
     {
-        string CreateApplicant(Applicant applicant);
+        Result CreateApplicant(Applicant applicant, Dictionary<string, string> conditionalDict);
     }
 }
